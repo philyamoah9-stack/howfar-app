@@ -1,4 +1,7 @@
-import { createServerSupabaseClient } from "../lib/supabase-server";
+const fs = require('fs');
+const path = require('path');
+
+const content = `import { createServerSupabaseClient } from "../lib/supabase-server";
 import { redirect } from "next/navigation";
 import OverviewClient from "./OverviewClient";
 
@@ -38,3 +41,7 @@ export default async function DashboardPage() {
     />
   );
 }
+`;
+
+fs.writeFileSync(path.join(__dirname, 'app', 'dashboard', 'page.tsx'), content, 'utf8');
+console.log('Done: page.tsx');
