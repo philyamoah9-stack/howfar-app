@@ -85,7 +85,7 @@ export default function DebtClient({ userId, initialDebts, monthlyIncome }: Prop
         <button onClick={openModal} style={{ padding: "10px 20px", background: "#d4a947", border: "none", color: "#0a0a0a", borderRadius: "100px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>+ Add debt</button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+      <div className="dash-cards" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
         <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#c85a5a", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>Total debt</div>
           <div style={{ fontFamily: "Fraunces, serif", fontSize: "40px", fontWeight: 300, color: "#c85a5a", letterSpacing: "-0.02em", marginBottom: "4px" }}>{fmt(totalDebt)}</div>

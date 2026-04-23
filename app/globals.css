@@ -76,3 +76,21 @@
   ::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
 }
+
+@media (max-width: 767px) {
+  .dash-cards {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-split {
+    grid-template-columns: 1fr !important;
+  }
+  .dashboard-main > div {
+    padding: 20px 16px !important;
+  }
+  .dashboard-main h1 {
+    font-size: 28px !important;
+  }
+  .dashboard-main [style*="grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto"] {
+    display: none !important;
+  }
+}

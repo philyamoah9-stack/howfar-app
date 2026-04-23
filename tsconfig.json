@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "setup-mobilenav.js"  ],
   "exclude": ["node_modules"]
 }

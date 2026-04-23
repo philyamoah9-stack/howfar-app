@@ -97,7 +97,7 @@ export default function GoalsClient({ userId, initialGoals }: Props) {
         <button onClick={openGoal} style={{ padding: "10px 20px", background: "#d4a947", border: "none", color: "#0a0a0a", borderRadius: "100px", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>+ New goal</button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }}>
+      <div className="dash-cards" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }}>
         {[
           { label: "Active goals", value: goals.length.toString(), color: "#f4ecd8" },
           { label: "Total target", value: fmt(totalTarget) + " GHS", color: "#f4ecd8" },

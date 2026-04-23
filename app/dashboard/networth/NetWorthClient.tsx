@@ -83,7 +83,7 @@ export default function NetWorthClient({ userId, initialAssets, initialLiabiliti
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "16px", marginBottom: "24px" }}>
+      <div className="dash-cards" style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "16px", marginBottom: "24px" }}>
         <div style={{ background: "radial-gradient(circle at 90% 10%, rgba(212,169,71,0.12) 0%, transparent 40%), #141414", border: "1px solid #2a2a2a", borderRadius: "16px", padding: "28px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>Net worth</div>
           <div style={{ fontFamily: "Fraunces, serif", fontSize: "52px", fontWeight: 300, color: netWorth >= 0 ? "#d4a947" : "#c85a5a", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: "6px" }}>
@@ -109,7 +109,7 @@ export default function NetWorthClient({ userId, initialAssets, initialLiabiliti
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+      <div className="dash-split" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
         <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase" }}>Assets</div>

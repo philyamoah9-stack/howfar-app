@@ -1,0 +1,38 @@
+const fs = require('fs');
+const path = require('path');
+
+const css = `
+/* Dashboard responsive grid fixes */
+@media (max-width: 767px) {
+  /* Stack all grids on mobile */
+  [style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="grid-template-columns: repeat(2"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="grid-template-columns: 1.4fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="grid-template-columns: 1.2fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  [style*="grid-template-columns: 1.4fr 1fr; gap"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* Fix padding on mobile */
+  .dashboard-main > div {
+    padding: 20px 16px !important;
+  }
+  /* Fix table overflow */
+  [style*="grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto"] {
+    display: none !important;
+  }
+}
+`;
+
+fs.writeFileSync(path.join(__dirname, 'app', 'dashboard-responsive.css'), css, 'utf8');
+console.log('Done: dashboard-responsive.css');

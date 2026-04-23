@@ -1,7 +1,9 @@
-import { createServerSupabaseClient } from "../lib/supabase-server";
+const fs = require('fs');
+const path = require('path');
+
+const content = `import { createServerSupabaseClient } from "../lib/supabase-server";
 import { redirect } from "next/navigation";
 import MobileNav from "../components/MobileNav";
-import "../dashboard-responsive.css";
 
 export default async function DashboardLayout({
   children,
@@ -88,7 +90,7 @@ export default async function DashboardLayout({
         {children}
       </main>
 
-      <style>{`
+      <style>{\`
         @media (min-width: 768px) {
           .desktop-sidebar {
             display: flex !important;
@@ -101,20 +103,12 @@ export default async function DashboardLayout({
           .dashboard-main {
             padding-top: 60px;
           }
-          .dashboard-main > div {
-            padding: 20px 16px !important;
-          }
-          .dash-grid-3 {
-            grid-template-columns: 1fr !important;
-          }
-          .dash-grid-2 {
-            grid-template-columns: 1fr !important;
-          }
-          .dash-grid-split {
-            grid-template-columns: 1fr !important;
-          }
         }
-      `}</style>
+      \`}</style>
     </div>
   );
 }
+`;
+
+fs.writeFileSync(path.join(__dirname, 'app', 'dashboard', 'layout.tsx'), content, 'utf8');
+console.log('Done: layout.tsx');
