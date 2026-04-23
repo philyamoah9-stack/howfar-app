@@ -101,7 +101,7 @@ export default function Finance() {
           from the life you want.
         </p>
 
-        <div
+        <div className="feature-split"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",

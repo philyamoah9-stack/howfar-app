@@ -83,7 +83,7 @@ export default function Community() {
           in-between. With people who actually understand.
         </p>
 
-        <div
+        <div className="dash-cards" 
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(2, 1fr)",
@@ -145,7 +145,7 @@ export default function Community() {
         </div>
 
         {/* Philosophy callout */}
-        <div
+        <div className="feature-split"
           style={{
             padding: "40px",
             background: "rgba(212,169,71,0.06)",

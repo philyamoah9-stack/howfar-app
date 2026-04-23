@@ -74,7 +74,7 @@ export default function Navbar() {
         </em>
       </div>
 
-      <div
+      <div className="nav-links"
         style={{
           display: "flex",
           gap: "28px",
@@ -91,7 +91,7 @@ export default function Navbar() {
           Community
         </a>
         
-          <a href="#beta"
+          <a href="/signup"
           className="join-btn"
           style={{padding:"10px 22px",background:"#d4a947",color:"#0a0a0a",borderRadius:"100px",textDecoration:"none",fontSize:"13px",fontWeight:600,letterSpacing:"0.02em"}}
         >

@@ -68,7 +68,7 @@ export default function Hero() {
         }}
       />
 
-      <div
+      <div className="hero-inner"
         style={{
           maxWidth: "1280px",
           margin: "0 auto",

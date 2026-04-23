@@ -94,3 +94,37 @@
     display: none !important;
   }
 }
+
+@media (max-width: 767px) {
+  /* Landing hero */
+  .hero-inner {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Landing pillars grid */
+  .pillars-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Landing feature split */
+  .feature-split {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .nav-links a:not([href="/signup"]) {
+    display: none !important;
+  }
+  .hero-inner {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .pillars-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .feature-split {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+}

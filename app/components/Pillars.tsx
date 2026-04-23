@@ -105,7 +105,7 @@ export default function Pillars() {
         </p>
 
         {/* Grid */}
-        <div
+        <div className="pillars-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",

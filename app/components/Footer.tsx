@@ -57,7 +57,7 @@ export default function Footer() {
         </p>
 
         
-         <a href="/app"
+         <a href="/signup"
           style={{padding:"16px 40px",background:"#d4a947",color:"#0a0a0a",borderRadius:"100px",textDecoration:"none",fontSize:"15px",fontWeight:600,letterSpacing:"0.02em",display:"inline-block"}}
         >
           Start your journey
