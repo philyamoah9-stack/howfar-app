@@ -24,7 +24,7 @@ export default function SignupPage() {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `https://yourhowfar.com/dashboard`,
       },
     });
 

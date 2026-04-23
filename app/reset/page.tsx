@@ -16,7 +16,7 @@ export default function ResetPage() {
     setError("");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
+      redirectTo: `https://yourhowfar.com/update-password`,
     });
 
     if (error) {
