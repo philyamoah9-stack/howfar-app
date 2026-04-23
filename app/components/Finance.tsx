@@ -5,7 +5,7 @@ export default function Finance() {
     {
       mark: "B",
       title: "Budget that speaks Ghanaian",
-      desc: "Categories for chop money, tithe, MoMo, prepaid electricity, black tax, school fees per term — not Uber Eats.",
+      desc: "Categories that reflect how you actually spend — not how a Silicon Valley designer thinks you spend. Fully customisable to your life.",
     },
     {
       mark: "N",
@@ -95,10 +95,7 @@ export default function Finance() {
             marginBottom: "60px",
           }}
         >
-          Every Ghanaian finance app either ignores how we actually live or
-          tries to be a bank. How Far? is neither. It is a mirror — showing
-          you where your money is, where it is going, and how far you are
-          from the life you want.
+          Every finance app either ignores how you actually live or tries to be a bank.
         </p>
 
         <div className="feature-split"

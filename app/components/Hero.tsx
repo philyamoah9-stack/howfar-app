@@ -109,7 +109,7 @@ export default function Hero() {
                 display: "inline-block",
               }}
             />
-            Built in Accra · Private beta · 2026
+            Private beta · 2026 · Built with purpose
           </div>
 
           <h1
@@ -147,10 +147,7 @@ export default function Hero() {
               marginBottom: "40px",
             }}
           >
-            The personal growth platform for Ghanaian and African
-            professionals. Track your money, your habits, your mind, your
-            purpose — all in one place. Retire on your own terms. Grow on
-            purpose.
+            The personal growth platform for professionals who take their future seriously. Track your money, your habits, your mind, your purpose — all in one place. Retire on your own terms. Grow on purpose.
           </p>
 
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>

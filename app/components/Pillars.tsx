@@ -99,9 +99,7 @@ export default function Pillars() {
             marginBottom: "60px",
           }}
         >
-          We start with finance because it is the most measurable. But How
-          Far? is designed to grow with you — across habits, mind,
-          relationships, career, and purpose. One life. One platform.
+          We start with finance because it is the most measurable and most urgent. But How Far? is designed to grow with you — across habits, mind, relationships, career, and purpose. One life. One platform.
         </p>
 
         {/* Grid */}

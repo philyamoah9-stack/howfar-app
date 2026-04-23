@@ -22,7 +22,7 @@ export default function Footer() {
             marginBottom: "20px",
           }}
         >
-          — Private beta · Accra, Ghana · 2026
+          Private beta · 2026
         </div>
 
         <h2
