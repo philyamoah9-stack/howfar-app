@@ -95,15 +95,39 @@ export default function RetirementClient({ userId, profile }: Props) {
           <div className="dash-split" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px", marginBottom: "20px" }}>
             <div>
               <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Current age</label>
-              <input type="number" value={age} onChange={e => setAge(parseInt(e.target.value) || 0)} style={inputStyle} onFocus={e => e.currentTarget.style.borderColor = "#d4a947"} onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"} />
+              <input
+  type="number"
+  value={age || ""}
+  placeholder="e.g. 36"
+  onChange={e => setAge(parseInt(e.target.value) || 0)}
+  style={inputStyle}
+  onFocus={e => { e.currentTarget.style.borderColor = "#d4a947"; if (age === 0) setAge(0); }}
+  onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"}
+/>
             </div>
             <div>
               <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Target retirement age</label>
-              <input type="number" value={retireAge} onChange={e => setRetireAge(parseInt(e.target.value) || 0)} style={inputStyle} onFocus={e => e.currentTarget.style.borderColor = "#d4a947"} onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"} />
+              <input
+  type="number"
+  value={retireAge || ""}
+  placeholder="e.g. 60"
+  onChange={e => setRetireAge(parseInt(e.target.value) || 0)}
+  style={inputStyle}
+  onFocus={e => e.currentTarget.style.borderColor = "#d4a947"}
+  onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"}
+/>
             </div>
             <div>
               <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Monthly income (GHS)</label>
-              <input type="number" value={income} onChange={e => setIncome(parseFloat(e.target.value) || 0)} style={inputStyle} onFocus={e => e.currentTarget.style.borderColor = "#d4a947"} onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"} />
+              <input
+  type="number"
+  value={income || ""}
+  placeholder="e.g. 5000"
+  onChange={e => setIncome(parseFloat(e.target.value) || 0)}
+  style={inputStyle}
+  onFocus={e => e.currentTarget.style.borderColor = "#d4a947"}
+  onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"}
+/>
             </div>
             <div>
               <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Current savings (GHS)</label>
