@@ -1,4 +1,7 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+const content = `"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -149,3 +152,10 @@ export default function SettingsClient({ userId, email, profile }: Props) {
     </div>
   );
 }
+`;
+
+fs.writeFileSync(
+  path.join(__dirname, 'app', 'dashboard', 'settings', 'SettingsClient.tsx'),
+  content, 'utf8'
+);
+console.log('Done: SettingsClient.tsx');
