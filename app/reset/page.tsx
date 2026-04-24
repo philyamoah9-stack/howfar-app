@@ -42,18 +42,20 @@ export default function ResetPage() {
     >
       <div style={{ width: "100%", maxWidth: "440px" }}>
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div
-            style={{
-              fontFamily: "Fraunces, serif",
-              fontSize: "32px",
-              fontWeight: 300,
-              color: "#f4ecd8",
-              marginBottom: "8px",
-            }}
-          >
-            How{" "}
-            <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-          </div>
+          <a href="/" style={{ textDecoration: "none" }}>
+            <div
+              style={{
+                fontFamily: "Fraunces, serif",
+                fontSize: "32px",
+                fontWeight: 300,
+                color: "#f4ecd8",
+                marginBottom: "8px",
+              }}
+            >
+              How{" "}
+              <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
+            </div>
+          </a>
           <div
             style={{
               fontFamily: "JetBrains Mono, monospace",

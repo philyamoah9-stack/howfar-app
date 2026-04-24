@@ -49,9 +49,11 @@ export default async function DashboardLayout({
         zIndex: 50,
         overflowY: "auto",
       }} className="desktop-sidebar">
-        <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8", marginBottom: "28px", padding: "0 10px" }}>
-          How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-        </div>
+        <a href="/" style={{ textDecoration: "none", display: "block", marginBottom: "28px", padding: "0 10px" }}>
+          <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
+            How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
+          </div>
+        </a>
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", borderRadius: "12px", background: "#1a1a1a", border: "1px solid #2a2a2a", marginBottom: "28px" }}>
           <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: "linear-gradient(135deg, #d4a947, #8a6f2e)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Fraunces, serif", fontWeight: 500, color: "#0a0a0a", fontSize: "15px", flexShrink: 0 }}>

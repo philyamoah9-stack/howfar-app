@@ -18,9 +18,11 @@ export default function MobileNav({ name, initial, navItems }: Props) {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 20px",
       }} className="mobile-topbar">
-        <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
-          How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-        </div>
+        <a href="/" style={{ textDecoration: "none" }}>
+          <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
+            How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
+          </div>
+        </a>
         <button onClick={() => setOpen(true)} style={{
           background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#f4ecd8",
           width: "40px", height: "40px", borderRadius: "10px", fontSize: "18px",
@@ -46,9 +48,11 @@ export default function MobileNav({ name, initial, navItems }: Props) {
         display: "flex", flexDirection: "column",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
-          <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
-            How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-          </div>
+          <a href="/" style={{ textDecoration: "none" }}>
+            <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
+              How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
+            </div>
+          </a>
           <button onClick={() => setOpen(false)} style={{
             background: "transparent", border: "none", color: "#7a7468",
             fontSize: "24px", cursor: "pointer", lineHeight: 1,
