@@ -45,7 +45,16 @@ export default function SettingsClient({ userId, email, profile }: Props) {
 
   const inputStyle = { width: "100%", padding: "12px 14px", background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "10px", color: "#f4ecd8", fontSize: "14px", fontFamily: "Inter, sans-serif", outline: "none" } as React.CSSProperties;
 
-  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+ function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "28px", marginBottom: "16px" }}>
+      <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#d4a947", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "20px" }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+export default function SettingsClient({ userId, email, profile }: Props) {
     <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "28px", marginBottom: "16px" }}>
       <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#d4a947", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "20px" }}>{title}</div>
       {children}
@@ -64,7 +73,15 @@ export default function SettingsClient({ userId, email, profile }: Props) {
       <Section title="Profile">
         <div style={{ marginBottom: "16px" }}>
           <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Display name</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} style={inputStyle} onFocus={e => e.currentTarget.style.borderColor = "#d4a947"} onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"} />
+          <input
+  type="text"
+  value={name}
+  onChange={e => setName(e.target.value)}
+  autoComplete="off"
+  style={inputStyle}
+  onFocus={e => e.currentTarget.style.borderColor = "#d4a947"}
+  onBlur={e => e.currentTarget.style.borderColor = "#2a2a2a"}
+/>
         </div>
         <div>
           <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Email address</label>
