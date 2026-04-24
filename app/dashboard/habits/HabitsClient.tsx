@@ -208,7 +208,7 @@ export default function HabitsClient({ userId, initialHabits, initialLogs, today
                   const bg = ratio === 0 ? "#1e1e1e" : ratio < 0.4 ? "rgba(212,169,71,0.2)" : ratio < 0.7 ? "rgba(212,169,71,0.5)" : "#d4a947";
                   const isToday = date === today;
                   return (
-                    <div key={date} style={{ aspectRatio: "1", borderRadius: "4px", background: bg, border: isToday ? "1.5px solid #d4a947" : "none", title: date }} />
+                    <div key={date} style={{ aspectRatio: "1", borderRadius: "4px", background: bg, border: isToday ? "1.5px solid #d4a947" : "none"}} />
                   );
                 })}
               </div>
