@@ -87,3 +87,30 @@ export async function deleteTransaction(id: string) {
     .eq("id", id);
   if (error) throw error;
 }
+
+export type Habit = {
+  id: string;
+  user_id: string;
+  name: string;
+  category: string;
+  created_at: string;
+};
+
+export type HabitLog = {
+  id: string;
+  habit_id: string;
+  user_id: string;
+  date: string;
+  completed: boolean;
+};
+
+export const HABIT_TEMPLATES = [
+  { name: "Morning prayer & reading", category: "Faith" },
+  { name: "Read 10 pages", category: "Mind" },
+  { name: "Exercise", category: "Health" },
+  { name: "Drink 8 glasses of water", category: "Health" },
+  { name: "No social media before noon", category: "Mind" },
+  { name: "Walk 6,000 steps", category: "Health" },
+  { name: "Journal", category: "Mind" },
+  { name: "Review budget", category: "Finance" },
+];
