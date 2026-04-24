@@ -109,7 +109,7 @@ export default function Footer() {
       </section>
 
       {/* Footer */}
-      <footer
+<footer
         style={{
           padding: "40px",
           background: "#0a0a0a",
@@ -118,6 +118,7 @@ export default function Footer() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: "16px",
+          borderTop: "1px solid #1e1e1e",
         }}
       >
         <div
@@ -129,26 +130,16 @@ export default function Footer() {
         >
           How{" "}
           <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-          <span
-            style={{
-              color: "#7a7468",
-              fontSize: "13px",
-              fontFamily: "Inter, sans-serif",
-              marginLeft: "12px",
-            }}
-          >
+          <span style={{ color: "#7a7468", fontSize: "13px", fontFamily: "Inter, sans-serif", marginLeft: "12px" }}>
             · a Deo Volente product
           </span>
         </div>
-        <div
-          style={{
-            fontFamily: "JetBrains Mono, monospace",
-            fontSize: "12px",
-            color: "#7a7468",
-            letterSpacing: "0.05em",
-          }}
-        >
-          Accra · Ghana · 2026
+        <div style={{ display: "flex", gap: "24px", alignItems: "center", flexWrap: "wrap" }}>
+          <a href="/privacy" style={{ fontSize: "12px", color: "#7a7468", textDecoration: "none" }}>Privacy</a>
+          <a href="/terms" style={{ fontSize: "12px", color: "#7a7468", textDecoration: "none" }}>Terms</a>
+          <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "12px", color: "#7a7468", letterSpacing: "0.05em" }}>
+            2026 · Private beta
+          </div>
         </div>
       </footer>
     </>
