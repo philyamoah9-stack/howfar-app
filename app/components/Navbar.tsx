@@ -40,39 +40,35 @@ export default function Navbar() {
         transition: "all 0.3s ease",
       }}
     >
-      <div
-        style={{
-          fontFamily: "Fraunces, serif",
-          fontSize: "22px",
-          fontWeight: 500,
-          color: "#f4ecd8",
-          letterSpacing: "-0.02em",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-        }}
-      >
-        <span
+      <a href="/" style={{ textDecoration: "none" }}>
+        <div
           style={{
-            width: "8px",
-            height: "8px",
-            background: "#d4a947",
-            borderRadius: "50%",
-            boxShadow: "0 0 12px #d4a947",
-            display: "inline-block",
-          }}
-        />
-        How{" "}
-        <em
-          style={{
-            fontStyle: "italic",
-            color: "#d4a947",
-            fontWeight: 400,
+            fontFamily: "Fraunces, serif",
+            fontSize: "22px",
+            fontWeight: 500,
+            color: "#f4ecd8",
+            letterSpacing: "-0.02em",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
           }}
         >
-          Far?
-        </em>
-      </div>
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              background: "#d4a947",
+              borderRadius: "50%",
+              boxShadow: "0 0 12px #d4a947",
+              display: "inline-block",
+            }}
+          />
+          How{" "}
+          <em style={{ fontStyle: "italic", color: "#d4a947", fontWeight: 400 }}>
+            Far?
+          </em>
+        </div>
+      </a>
 
       <div className="nav-links"
         style={{
