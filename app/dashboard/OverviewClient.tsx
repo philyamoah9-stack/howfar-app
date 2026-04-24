@@ -24,11 +24,12 @@ type Props = {
   month: string;
   habits: Habit[];
   habitLogs: HabitLog[];
+  journalEntries: { date: string }[];
 };
 
 const FX: Record<string, number> = { GHS: 1, USD: 15.5, EUR: 16.8, GBP: 19.6 };
 
-export default function OverviewClient({ profile, transactions, goals, assets, liabilities, debts, month, habits, habitLogs }: Props) {
+export default function OverviewClient({ profile, transactions, goals, assets, liabilities, debts, month, habits, habitLogs, journalEntries }: Props) {
   const [countdown, setCountdown] = useState({ years: 0, months: 0, days: 0, hours: 0 });
   const name = profile?.name || "Friend";
   const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
@@ -105,8 +106,15 @@ export default function OverviewClient({ profile, transactions, goals, assets, l
     debtScore
   ));
 
-  // How Far? score
-  const howFarScore = Math.min(100, Math.round((financeScore * 0.7) + (habitsScore * 0.3)));
+// Mind score (journal entries last 7 days)
+  const mindScore = Math.round((journalEntries.length / 7) * 100);
+
+  // How Far? score - finance + habits + mind
+  const howFarScore = Math.min(100, Math.round(
+    (financeScore * 0.6) +
+    (habitsScore * 0.25) +
+    (mindScore * 0.15)
+  ));
 
   // Weekly focus
   const getFocus = () => {
@@ -160,14 +168,20 @@ export default function OverviewClient({ profile, transactions, goals, assets, l
             ))}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", paddingTop: "16px", borderTop: "1px solid #1e1e1e" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", paddingTop: "16px", borderTop: "1px solid #1e1e1e" }}>
             <div>
               <div style={{ fontSize: "10px", color: "#7a7468", letterSpacing: "0.08em", textTransform: "uppercase" }}>Finance</div>
-              <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8", marginTop: "4px" }}>{financeScore}<em style={{ color: "#d4a947", fontStyle: "italic", fontSize: "14px" }}>%</em></div>
+              <div style={{ fontFamily: "Fraunces, serif", fontSize: "18px", color: "#f4ecd8", marginTop: "4px" }}>{financeScore}<em style={{ color: "#d4a947", fontStyle: "italic", fontSize: "12px" }}>%</em></div>
             </div>
             <div>
               <div style={{ fontSize: "10px", color: "#7a7468", letterSpacing: "0.08em", textTransform: "uppercase" }}>Habits</div>
-              <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8", marginTop: "4px" }}>{habitsScore}<em style={{ color: "#d4a947", fontStyle: "italic", fontSize: "14px" }}>%</em></div>
+              <div style={{ fontFamily: "Fraunces, serif", fontSize: "18px", color: "#f4ecd8", marginTop: "4px" }}>{habitsScore}<em style={{ color: "#d4a947", fontStyle: "italic", fontSize: "12px" }}>%</em></div>
             </div>
+            <div>
+              <div style={{ fontSize: "10px", color: "#7a7468", letterSpacing: "0.08em", textTransform: "uppercase" }}>Mind</div>
+              <div style={{ fontFamily: "Fraunces, serif", fontSize: "18px", color: "#f4ecd8", marginTop: "4px" }}>{mindScore}<em style={{ color: "#d4a947", fontStyle: "italic", fontSize: "12px" }}>%</em></div>
+            </div>
+          </div>
           </div>
         </div>
 
