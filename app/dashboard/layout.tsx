@@ -72,6 +72,9 @@ export default async function DashboardLayout({
         ))}
 
         <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid #1e1e1e" }}>
+          <a href="/dashboard/settings" style={{ display: "block", padding: "10px 12px", borderRadius: "10px", fontSize: "13px", color: "#999080", textDecoration: "none", marginBottom: "2px" }}>
+          Settings
+        </a>
           <a href="/signout" style={{ display: "block", padding: "10px", background: "transparent", border: "1px solid #2a2a2a", color: "#7a7468", borderRadius: "10px", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", textAlign: "center", textDecoration: "none" }}>
             Sign out
           </a>
