@@ -31,6 +31,7 @@ export default async function DashboardLayout({
     { label: "Debt", href: "/dashboard/debt" },
     { label: "Habits", href: "/dashboard/habits" },
     { label: "Mind", href: "/dashboard/mind" },
+    { label: "sikareads", href: "/dashboard/sikareads" },
   ];
 
   return (
@@ -68,11 +69,6 @@ export default async function DashboardLayout({
           <a key={item.label} href={item.href} style={{ display: "block", padding: "10px 12px", borderRadius: "10px", fontSize: "13px", color: "#999080", textDecoration: "none", marginBottom: "2px" }}>
             {item.label}
           </a>
-        ))}
-
-        <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.15em", color: "#7a7468", textTransform: "uppercase", margin: "24px 12px 8px" }}>Coming soon</div>
-        {["sikareads"].map((item) => (
-          <div key={item} style={{ padding: "10px 12px", fontSize: "13px", color: "#7a7468", opacity: 0.5 }}>{item}</div>
         ))}
 
         <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid #1e1e1e" }}>
