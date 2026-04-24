@@ -17,6 +17,8 @@ export default async function DashboardPage() {
     { data: assets },
     { data: liabilities },
     { data: debts },
+    { data: habits },
+    { data: habitLogs },
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     supabase.from("transactions").select("*").eq("user_id", user.id).gte("date", month + "-01").lte("date", month + "-31"),
@@ -24,6 +26,8 @@ export default async function DashboardPage() {
     supabase.from("assets").select("*").eq("user_id", user.id),
     supabase.from("liabilities").select("*").eq("user_id", user.id),
     supabase.from("debts").select("*").eq("user_id", user.id),
+    supabase.from("habits").select("*").eq("user_id", user.id),
+    supabase.from("habit_logs").select("*").eq("user_id", user.id).gte("date", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)),
   ]);
 
   return (
@@ -35,6 +39,8 @@ export default async function DashboardPage() {
       liabilities={liabilities || []}
       debts={debts || []}
       month={month}
+      habits={habits || []}
+      habitLogs={habitLogs || []}
     />
   );
 }

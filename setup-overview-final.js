@@ -1,4 +1,7 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+const content = `"use client";
 
 import { useState, useEffect } from "react";
 
@@ -117,17 +120,17 @@ export default function OverviewClient({ profile, transactions, goals, assets, l
     const closest = [...goals].sort((a, b) => (a.saved / a.target) - (b.saved / b.target))[0];
     const remaining = closest.target - closest.saved;
     const monthsLeft = Math.max(1, Math.round((new Date(closest.deadline).getTime() - Date.now()) / (30.44 * 24 * 60 * 60 * 1000)));
-    return { text: `Close the gap on your ${closest.name}. About GHS ${fmt(Math.round(remaining / monthsLeft))}/month gets you there on time.`, action: "Update goal", href: "/dashboard/goals" };
+    return { text: \`Close the gap on your \${closest.name}. About GHS \${fmt(Math.round(remaining / monthsLeft))}/month gets you there on time.\`, action: "Update goal", href: "/dashboard/goals" };
   };
   const focus = getFocus();
 
   const recent = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 4);
   const quotes = profile?.faith_mode ? [
-    { t: "\"The plans of the diligent lead surely to abundance.\"", a: "— Proverbs 21:5" },
-    { t: "\"Commit your work to the Lord, and your plans will be established.\"", a: "— Proverbs 16:3" },
+    { t: "\\"The plans of the diligent lead surely to abundance.\\"", a: "— Proverbs 21:5" },
+    { t: "\\"Commit your work to the Lord, and your plans will be established.\\"", a: "— Proverbs 16:3" },
   ] : [
-    { t: "\"The man who moves a mountain begins by carrying away small stones.\"", a: "— Confucius" },
-    { t: "\"Time is your most honest currency. Spend it like you mean it.\"", a: "— How Far?" },
+    { t: "\\"The man who moves a mountain begins by carrying away small stones.\\"", a: "— Confucius" },
+    { t: "\\"Time is your most honest currency. Spend it like you mean it.\\"", a: "— How Far?" },
   ];
   const quote = quotes[Math.floor(Date.now() / 86400000) % quotes.length];
   const cardStyle = (extra = {}) => ({ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px", ...extra });
@@ -307,3 +310,7 @@ export default function OverviewClient({ profile, transactions, goals, assets, l
     </div>
   );
 }
+`;
+
+fs.writeFileSync(path.join(__dirname, 'app', 'dashboard', 'OverviewClient.tsx'), content, 'utf8');
+console.log('Done: OverviewClient.tsx');
