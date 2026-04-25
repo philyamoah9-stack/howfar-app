@@ -1,3 +1,4 @@
+import Footer from "../components/Footer";
 "use client";
 
 import { useState } from "react";
@@ -280,6 +281,7 @@ export default function SignupPage() {
           Your data stays yours. Always.
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

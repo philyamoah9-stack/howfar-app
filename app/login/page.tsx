@@ -1,3 +1,4 @@
+import Footer from "../components/Footer";
 "use client";
 
 import { useState } from "react";
@@ -242,6 +243,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

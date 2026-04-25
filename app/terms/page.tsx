@@ -1,3 +1,4 @@
+import Footer from "../components/Footer";
 export default function TermsPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", padding: "80px 40px" }}>
@@ -25,6 +26,7 @@ export default function TermsPage() {
           </div>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }

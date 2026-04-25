@@ -1,3 +1,4 @@
+import Footer from "./components/Footer";
 export default function NotFound() {
   return (
     <div
@@ -63,6 +64,7 @@ export default function NotFound() {
       >
         Back to How Far?
       </a>
+      <Footer />
     </div>
   );
 }
