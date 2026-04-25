@@ -15,19 +15,27 @@ export default function MobileNav({ name, initial, navItems }: Props) {
         position: "fixed", top: 0, left: 0, right: 0, height: "60px",
         background: "rgba(20,20,20,0.95)", backdropFilter: "blur(20px)",
         borderBottom: "1px solid #1e1e1e", zIndex: 100,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
+        display: "flex", alignItems: "center",
         padding: "0 20px",
       }} className="mobile-topbar">
-        <a href="/" style={{ textDecoration: "none" }}>
-          <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
-            How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
-          </div>
-        </a>
+        {/* Hamburger — left */}
         <button onClick={() => setOpen(true)} style={{
           background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#f4ecd8",
           width: "40px", height: "40px", borderRadius: "10px", fontSize: "18px",
           cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
         }}>☰</button>
+
+        {/* Brand — centered */}
+        <div style={{
+          position: "absolute", left: "50%", transform: "translateX(-50%)",
+        }}>
+          <a href="/" style={{ textDecoration: "none" }}>
+            <div style={{ fontFamily: "Fraunces, serif", fontSize: "20px", color: "#f4ecd8" }}>
+              How <em style={{ fontStyle: "italic", color: "#d4a947" }}>Far?</em>
+            </div>
+          </a>
+        </div>
       </div>
 
       {/* Drawer overlay */}
