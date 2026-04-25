@@ -1,6 +1,5 @@
 "use client";
 
-import Footer from "../components/Footer";
 import { useState } from "react";
 import { createClient } from "../lib/supabase";
 import { useRouter } from "next/navigation";
@@ -243,7 +242,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Footer from "../components/Footer";
 import { useState } from "react";
 import { createClient } from "../lib/supabase";
 import { useRouter } from "next/navigation";
@@ -281,7 +280,6 @@ export default function SignupPage() {
           Your data stays yours. Always.
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

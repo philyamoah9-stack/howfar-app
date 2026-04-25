@@ -1,6 +1,5 @@
 "use client";
 
-import Footer from "../components/Footer";
 import { useState } from "react";
 import { createClient } from "../lib/supabase";
 
@@ -219,7 +218,6 @@ export default function ResetPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
