@@ -1,6 +1,6 @@
-import Footer from "../components/Footer";
 "use client";
 
+import Footer from "../components/Footer";
 import { useState } from "react";
 import { createClient } from "../lib/supabase";
 
