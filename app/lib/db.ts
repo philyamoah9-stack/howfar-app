@@ -114,3 +114,85 @@ export const HABIT_TEMPLATES = [
   { name: "Journal", category: "Mind" },
   { name: "Review budget", category: "Finance" },
 ];
+
+// Add these new types and functions to lib/db.ts
+
+export type CustomCategory = {
+  id: string;
+  user_id: string;
+  type: "income" | "expense";
+  name: string;
+  created_at: string;
+};
+
+export type HiddenCategory = {
+  id: string;
+  user_id: string;
+  type: "income" | "expense";
+  name: string;
+  created_at: string;
+};
+
+// Fetch custom + hidden categories for a user
+export async function getCategoryPrefs(userId: string) {
+  const { createClient } = await import("./supabase");
+  const supabase = createClient();
+
+  const [customRes, hiddenRes] = await Promise.all([
+    supabase.from("custom_categories").select("*").eq("user_id", userId),
+    supabase.from("hidden_categories").select("*").eq("user_id", userId),
+  ]);
+
+  return {
+    custom: (customRes.data || []) as CustomCategory[],
+    hidden: (hiddenRes.data || []) as HiddenCategory[],
+  };
+}
+
+export async function addCustomCategory(
+  userId: string,
+  type: "income" | "expense",
+  name: string
+) {
+  const { createClient } = await import("./supabase");
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("custom_categories")
+    .insert({ user_id: userId, type, name })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as CustomCategory;
+}
+
+export async function deleteCustomCategory(id: string) {
+  const { createClient } = await import("./supabase");
+  const supabase = createClient();
+  const { error } = await supabase.from("custom_categories").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function toggleHiddenCategory(
+  userId: string,
+  type: "income" | "expense",
+  name: string,
+  isCurrentlyHidden: boolean
+) {
+  const { createClient } = await import("./supabase");
+  const supabase = createClient();
+
+  if (isCurrentlyHidden) {
+    const { error } = await supabase
+      .from("hidden_categories")
+      .delete()
+      .eq("user_id", userId)
+      .eq("type", type)
+      .eq("name", name);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("hidden_categories")
+      .insert({ user_id: userId, type, name });
+    if (error) throw error;
+  }
+}

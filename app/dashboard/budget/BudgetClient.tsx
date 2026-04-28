@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Transaction, INCOME_CATEGORIES, EXPENSE_CATEGORIES, CATEGORY_COLORS, addTransaction, deleteTransaction } from "../../lib/db";
+import {
+  Transaction,
+  INCOME_CATEGORIES,
+  EXPENSE_CATEGORIES,
+  CATEGORY_COLORS,
+  deleteTransaction,
+  CustomCategory,
+  HiddenCategory,
+  getCategoryPrefs,
+  addCustomCategory,
+  deleteCustomCategory,
+  toggleHiddenCategory,
+} from "../../lib/db";
 
 type Props = {
   userId: string;
@@ -25,13 +37,117 @@ export default function BudgetClient({ userId, initialTransactions, month }: Pro
   const [note, setNote] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
 
-  // Calculations
+  // ========================================================================
+  // CUSTOM CATEGORY STATE
+  // ========================================================================
+  const [customCats, setCustomCats] = useState<CustomCategory[]>([]);
+  const [hiddenCats, setHiddenCats] = useState<HiddenCategory[]>([]);
+  const [showManageCats, setShowManageCats] = useState(false);
+  const [showAddCustom, setShowAddCustom] = useState(false);
+  const [newCustomName, setNewCustomName] = useState("");
+  const [customError, setCustomError] = useState("");
+
+  // Load category preferences on mount
+  useEffect(() => {
+    getCategoryPrefs(userId)
+      .then(({ custom, hidden }) => {
+        setCustomCats(custom);
+        setHiddenCats(hidden);
+      })
+      .catch(() => {
+        // Fail silently — defaults will still work
+      });
+  }, [userId]);
+
+  // Build the active category list for the current modal type
+  const activeCategories = useMemo(() => {
+    const defaults = (txnType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES) as readonly string[];
+    const myCustom = customCats.filter(c => c.type === txnType).map(c => c.name);
+    const myHidden = new Set(hiddenCats.filter(c => c.type === txnType).map(c => c.name));
+    return [...defaults.filter(name => !myHidden.has(name)), ...myCustom];
+  }, [txnType, customCats, hiddenCats]);
+
+  // For the manage view we need to see EVERYTHING (including hidden)
+  const allCategoriesForType = useMemo(() => {
+    const defaults = (txnType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES) as readonly string[];
+    const hidden = new Set(hiddenCats.filter(c => c.type === txnType).map(c => c.name));
+    const myCustom = customCats.filter(c => c.type === txnType);
+    return {
+      defaults: defaults.map(name => ({ name, isHidden: hidden.has(name) })),
+      custom: myCustom,
+    };
+  }, [txnType, customCats, hiddenCats]);
+
+  // ========================================================================
+  // CUSTOM CATEGORY HANDLERS
+  // ========================================================================
+  const handleAddCustom = async () => {
+    const trimmed = newCustomName.trim();
+    if (!trimmed) { setCustomError("Name cannot be empty"); return; }
+    if (trimmed.length > 30) { setCustomError("Keep it under 30 characters"); return; }
+
+    const defaults = (txnType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES) as readonly string[];
+    const allExisting = [
+      ...defaults,
+      ...customCats.filter(c => c.type === txnType).map(c => c.name),
+    ].map(n => n.toLowerCase());
+
+    if (allExisting.includes(trimmed.toLowerCase())) {
+      setCustomError("That category already exists");
+      return;
+    }
+    if (customCats.filter(c => c.type === txnType).length >= 20) {
+      setCustomError("You can have up to 20 custom categories");
+      return;
+    }
+
+    try {
+      const created = await addCustomCategory(userId, txnType, trimmed);
+      setCustomCats(prev => [...prev, created]);
+      setCategory(trimmed); // auto-select the just-added one
+      setNewCustomName("");
+      setCustomError("");
+      setShowAddCustom(false);
+    } catch {
+      setCustomError("Could not save. Try again.");
+    }
+  };
+
+  const handleDeleteCustom = async (cat: CustomCategory) => {
+    if (!confirm(`Delete "${cat.name}"? Existing transactions in this category will keep the label.`)) return;
+    try {
+      await deleteCustomCategory(cat.id);
+      setCustomCats(prev => prev.filter(c => c.id !== cat.id));
+      if (category === cat.name) {
+        setCategory((txnType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES)[0]);
+      }
+    } catch {
+      alert("Could not delete. Try again.");
+    }
+  };
+
+  const handleToggleHidden = async (name: string, isHidden: boolean) => {
+    try {
+      await toggleHiddenCategory(userId, txnType, name, isHidden);
+      if (isHidden) {
+        setHiddenCats(prev => prev.filter(h => !(h.type === txnType && h.name === name)));
+      } else {
+        setHiddenCats(prev => [
+          ...prev,
+          { id: `temp-${Date.now()}`, user_id: userId, type: txnType, name, created_at: new Date().toISOString() },
+        ]);
+      }
+    } catch {
+      alert("Could not update. Try again.");
+    }
+  };
+
+  // Calculations (unchanged)
   const income = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const expenses = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   const saved = income - expenses;
   const savingsRate = income > 0 ? Math.round((saved / income) * 100) : 0;
 
-  // Expense breakdown by category
   const byCat: Record<string, number> = {};
   transactions.filter(t => t.type === "expense").forEach(t => {
     byCat[t.category] = (byCat[t.category] || 0) + t.amount;
@@ -47,14 +163,21 @@ export default function BudgetClient({ userId, initialTransactions, month }: Pro
   const openModal = (type: "income" | "expense") => {
     setTxnType(type);
     setAmount("");
-    setCategory(type === "income" ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]);
+    // Pick the first available (visible) category as default
+    const myHidden = new Set(hiddenCats.filter(h => h.type === type).map(h => h.name));
+    const defaults = (type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES) as readonly string[];
+    const visibleDefault = defaults.find(d => !myHidden.has(d));
+    const firstCustom = customCats.find(c => c.type === type)?.name;
+    setCategory(visibleDefault || firstCustom || defaults[0]);
     setNote("");
     setDate(new Date().toISOString().slice(0, 10));
     setError("");
+    setShowAddCustom(false);
+    setShowManageCats(false);
     setShowModal(true);
   };
 
-const handleSave = async () => {
+  const handleSave = async () => {
     if (!amount || parseFloat(amount) <= 0) { setError("Enter a valid amount"); return; }
     setLoading(true);
     try {
@@ -74,7 +197,6 @@ const handleSave = async () => {
 
       if (saveError) throw saveError;
 
-      // Update local state immediately
       setTransactions(prev => [data, ...prev]);
       setShowModal(false);
     } catch {
@@ -103,7 +225,7 @@ const handleSave = async () => {
 
   return (
     <div style={{ padding: "40px 48px" }}>
-      {/* Header */}
+      {/* Header — UNCHANGED */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", paddingBottom: "20px", borderBottom: "1px solid #1e1e1e", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "11px", color: "#d4a947", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "6px" }}>Finance · Budget</div>
@@ -121,7 +243,7 @@ const handleSave = async () => {
         </div>
       </div>
 
-      {/* Summary cards */}
+      {/* Summary cards — UNCHANGED */}
       <div className="dash-cards" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
         {[
           { label: "Income this month", value: fmt(income), color: "#7aa87a" },
@@ -137,9 +259,8 @@ const handleSave = async () => {
           </div>
         ))}
       </div>
-      
 
-      {/* Savings rate bar */}
+      {/* Savings rate bar — UNCHANGED */}
       <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px", marginBottom: "24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase" }}>Savings rate</div>
@@ -154,7 +275,7 @@ const handleSave = async () => {
       </div>
 
       <div className="dash-split" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "16px" }}>
-        {/* Transactions */}
+        {/* Transactions — UNCHANGED */}
         <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
             <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase" }}>Transactions · {monthLabel}</div>
@@ -199,7 +320,7 @@ const handleSave = async () => {
           )}
         </div>
 
-        {/* Expense breakdown */}
+        {/* Expense breakdown — UNCHANGED */}
         <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "20px" }}>Where your money went</div>
 
@@ -231,10 +352,10 @@ const handleSave = async () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal — UPDATED with custom category UI */}
       {showModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }} onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}>
-          <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: "20px", padding: "32px", maxWidth: "480px", width: "100%", position: "relative" }}>
+          <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: "20px", padding: "32px", maxWidth: "480px", width: "100%", position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ position: "absolute", top: "-1px", left: "40px", right: "40px", height: "1px", background: "linear-gradient(90deg, transparent, #d4a947, transparent)" }} />
 
             <h3 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: "26px", letterSpacing: "-0.02em", color: "#f4ecd8", marginBottom: "6px" }}>
@@ -255,13 +376,105 @@ const handleSave = async () => {
               </div>
             </div>
 
+            {/* CATEGORY SECTION — NEW UI */}
             <div style={{ marginBottom: "14px" }}>
-              <label style={{ display: "block", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase", marginBottom: "8px" }}>Category</label>
-              <select value={category} onChange={e => setCategory(e.target.value)} style={{ ...inputStyle, appearance: "none" as const }}>
-                {(txnType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <label style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.12em", color: "#7a7468", textTransform: "uppercase" }}>Category</label>
+                <button
+                  type="button"
+                  onClick={() => { setShowManageCats(!showManageCats); setShowAddCustom(false); }}
+                  style={{ background: "transparent", border: "none", color: "#d4a947", fontFamily: "JetBrains Mono, monospace", fontSize: "10px", letterSpacing: "0.05em", cursor: "pointer", textTransform: "uppercase" }}
+                >
+                  {showManageCats ? "Done" : "Manage"}
+                </button>
+              </div>
+
+              {!showManageCats ? (
+                <>
+                  <select value={category} onChange={e => setCategory(e.target.value)} style={{ ...inputStyle, appearance: "none" as const }}>
+                    {activeCategories.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  {!showAddCustom ? (
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddCustom(true); setCustomError(""); }}
+                      style={{ marginTop: "8px", padding: "8px 14px", background: "transparent", border: "1px dashed rgba(212,169,71,0.4)", borderRadius: "8px", color: "#d4a947", fontSize: "12px", cursor: "pointer", width: "100%" }}
+                    >
+                      + Add custom category
+                    </button>
+                  ) : (
+                    <div style={{ marginTop: "10px", padding: "12px", background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "10px" }}>
+                      <input
+                        type="text"
+                        autoFocus
+                        value={newCustomName}
+                        onChange={e => { setNewCustomName(e.target.value); setCustomError(""); }}
+                        onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleAddCustom(); } }}
+                        placeholder={txnType === "income" ? "e.g. Side Catering Gigs" : "e.g. Aunty Akos Contribution"}
+                        maxLength={30}
+                        style={{ ...inputStyle, marginBottom: "8px" }}
+                      />
+                      {customError && <div style={{ color: "#c85a5a", fontSize: "11px", marginBottom: "8px" }}>{customError}</div>}
+                      <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                        <button
+                          type="button"
+                          onClick={() => { setShowAddCustom(false); setNewCustomName(""); setCustomError(""); }}
+                          style={{ padding: "6px 14px", background: "transparent", border: "1px solid #2a2a2a", color: "#999080", borderRadius: "100px", fontSize: "11px", cursor: "pointer" }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleAddCustom}
+                          disabled={!newCustomName.trim()}
+                          style={{ padding: "6px 14px", background: newCustomName.trim() ? "#d4a947" : "#3a3a3a", border: "none", color: "#0a0a0a", borderRadius: "100px", fontSize: "11px", fontWeight: 600, cursor: newCustomName.trim() ? "pointer" : "not-allowed" }}
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* MANAGE VIEW */
+                <div style={{ background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "10px", padding: "12px", maxHeight: "260px", overflowY: "auto" }}>
+                  <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "9px", color: "#7a7468", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "8px" }}>Defaults</div>
+                  {allCategoriesForType.defaults.map(({ name, isHidden }) => (
+                    <div key={name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 4px", borderBottom: "1px solid #1e1e1e" }}>
+                      <span style={{ fontSize: "13px", color: isHidden ? "#5a5a5a" : "#f4ecd8", textDecoration: isHidden ? "line-through" : "none" }}>{name}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleHidden(name, isHidden)}
+                        style={{ background: "transparent", border: "1px solid #2a2a2a", color: isHidden ? "#d4a947" : "#999080", borderRadius: "100px", padding: "4px 12px", fontSize: "10px", cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}
+                      >
+                        {isHidden ? "Show" : "Hide"}
+                      </button>
+                    </div>
+                  ))}
+                  {allCategoriesForType.custom.length > 0 && (
+                    <>
+                      <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "9px", color: "#7a7468", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "14px", marginBottom: "8px" }}>Your custom</div>
+                      {allCategoriesForType.custom.map(cat => (
+                        <div key={cat.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 4px", borderBottom: "1px solid #1e1e1e" }}>
+                          <span style={{ fontSize: "13px", color: "#f4ecd8" }}>
+                            <span style={{ color: "#d4a947", marginRight: "6px" }}>★</span>
+                            {cat.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCustom(cat)}
+                            style={{ background: "transparent", border: "1px solid rgba(200,90,90,0.3)", color: "#c85a5a", borderRadius: "100px", padding: "4px 12px", fontSize: "10px", cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: "24px" }}>
