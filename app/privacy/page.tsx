@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           { title: "How we store it", body: "Your data is stored in Supabase (PostgreSQL database) with row-level security enforced at the database level. This means even our own engineers cannot query your personal data without explicit permission. Journal entries are encrypted at rest." },
           { title: "Your rights", body: "You can export all your data at any time from Settings. You can delete your account and all associated data at any time from Settings. These actions are permanent and immediate." },
           { title: "Cookies", body: "We use session cookies for authentication only. We do not use tracking cookies, advertising cookies, or third-party analytics cookies." },
-          { title: "Contact", body: "Questions about privacy? Email us at privacy@yourhowfar.com. We respond within 48 hours." },
+          { title: "Contact", body: "Questions about privacy? Email us at support@yourhowfar.com. We respond within 48 hours." },
         ].map(section => (
           <div key={section.title} style={{ marginBottom: "40px" }}>
             <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 400, fontSize: "24px", color: "#f4ecd8", marginBottom: "12px", letterSpacing: "-0.01em" }}>{section.title}</h2>
