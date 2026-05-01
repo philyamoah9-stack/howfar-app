@@ -1,4 +1,7 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+const content = `"use client";
 
 import { useState, useEffect } from "react";
 
@@ -7,14 +10,14 @@ type Progress = { id: string; book_id: string; status: "want" | "reading" | "don
 type Purchase = { book_id: string; book_title: string; book_author: string; book_genre: string; order_ref: string; purchased_at: string; };
 
 const STARTER_BOOKS = [
-  { id: "1", title: "The Richest Man in Babylon", author: "George S. Clason", cover_url: null, pillar_tag: "Finance", sikareads_link: null },
-  { id: "2", title: "Atomic Habits", author: "James Clear", cover_url: null, pillar_tag: "Mind", sikareads_link: null },
-  { id: "3", title: "The Purpose Driven Life", author: "Rick Warren", cover_url: null, pillar_tag: "Faith", sikareads_link: null },
-  { id: "4", title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", cover_url: null, pillar_tag: "Finance", sikareads_link: null },
-  { id: "5", title: "Think and Grow Rich", author: "Napoleon Hill", cover_url: null, pillar_tag: "Mind", sikareads_link: null },
-  { id: "6", title: "The Total Money Makeover", author: "Dave Ramsey", cover_url: null, pillar_tag: "Finance", sikareads_link: null },
-  { id: "7", title: "Boundaries", author: "Dr. Henry Cloud", cover_url: null, pillar_tag: "Family", sikareads_link: null },
-  { id: "8", title: "Deep Work", author: "Cal Newport", cover_url: null, pillar_tag: "Career", sikareads_link: null },
+  { id: "1", title: "The Richest Man in Babylon", author: "George S. Clason", cover_url: null, pillar_tag: "Finance", sikareads_link: null, isbn: "9780451205360" },
+  { id: "2", title: "Atomic Habits", author: "James Clear", cover_url: null, pillar_tag: "Mind", sikareads_link: null, isbn: "9780735211292" },
+  { id: "3", title: "The Purpose Driven Life", author: "Rick Warren", cover_url: null, pillar_tag: "Faith", sikareads_link: null, isbn: "9780310330023" },
+  { id: "4", title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", cover_url: null, pillar_tag: "Finance", sikareads_link: null, isbn: "9781612680194" },
+  { id: "5", title: "Think and Grow Rich", author: "Napoleon Hill", cover_url: null, pillar_tag: "Mind", sikareads_link: null, isbn: "9781585424337" },
+  { id: "6", title: "The Total Money Makeover", author: "Dave Ramsey", cover_url: null, pillar_tag: "Finance", sikareads_link: null, isbn: "9781595555274" },
+  { id: "7", title: "Boundaries", author: "Dr. Henry Cloud", cover_url: null, pillar_tag: "Family", sikareads_link: null, isbn: "9780310247456" },
+  { id: "8", title: "Deep Work", author: "Cal Newport", cover_url: null, pillar_tag: "Career", sikareads_link: null, isbn: "9781455586691" },
 ];
 
 const COVER_COLORS: Record<string, string> = {
@@ -53,15 +56,20 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
   const [coverErrors, setCoverErrors] = useState<Record<string, boolean>>({});
 
   const allBooks = books.length > 0 ? books : STARTER_BOOKS;
+
   const getProgress = (bookId: string) => myProgress.find(p => p.book_id === bookId);
+
   const reading = myProgress.filter(p => p.status === "reading");
   const done = myProgress.filter(p => p.status === "done");
   const want = myProgress.filter(p => p.status === "want");
 
+  // Auto-add purchased books
   useEffect(() => {
     const addPurchasedBooks = async () => {
       if (purchases.length === 0) return;
-      const untracked = purchases.filter(p => !myProgress.some(pr => pr.book_id === p.book_id));
+      const untracked = purchases.filter(p =>
+        !myProgress.some(pr => pr.book_id === p.book_id)
+      );
       if (untracked.length === 0) return;
       try {
         const supabase = (await import("../../lib/supabase")).createClient();
@@ -104,18 +112,21 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
     setMyProgress(prev => prev.map(p => p.id === progressId ? { ...p, progress_pct: pct } : p));
   };
 
-  const filteredBooks = filter === "all" ? allBooks : allBooks.filter(b => getProgress(b.id)?.status === filter);
+  const filteredBooks = filter === "all" ? allBooks :
+    allBooks.filter(b => {
+      const p = getProgress(b.id);
+      return p?.status === filter;
+    });
 
   const getCoverUrl = (bookId: string) => {
     const isbn = ISBN_MAP[bookId];
     if (!isbn || coverErrors[bookId]) return null;
-    return "https://covers.openlibrary.org/b/isbn/" + isbn + "-M.jpg";
+    return \`https://covers.openlibrary.org/b/isbn/\${isbn}-M.jpg\`;
   };
-
-  const getBookUrl = (bookId: string) => "https://sikareads.com/books/" + bookId;
 
   return (
     <div style={{ padding: "40px 48px" }}>
+      {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", paddingBottom: "20px", borderBottom: "1px solid #1e1e1e", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "11px", color: "#d4a947", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "6px" }}>sikareads · Reading</div>
@@ -128,6 +139,7 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
         </a>
       </div>
 
+      {/* Stats */}
       <div className="dash-cards" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
         {[
           { label: "Reading now", value: reading.length, color: "#d4a947", sub: "Books in progress" },
@@ -142,6 +154,7 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
         ))}
       </div>
 
+      {/* Currently reading */}
       {reading.length > 0 && (
         <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px", marginBottom: "16px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#d4a947", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "20px" }}>Currently reading</div>
@@ -153,8 +166,8 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
                   {coverUrl ? (
                     <img src={coverUrl} alt={p.books?.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={() => setCoverErrors(prev => ({ ...prev, [p.book_id]: true }))} />
                   ) : (
-                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "4px" }}>
-                      <div style={{ fontFamily: "Fraunces, serif", fontSize: "9px", color: "rgba(212,169,71,0.6)", textAlign: "center" }}>{p.books?.title?.split(" ")[0]}</div>
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ fontFamily: "Fraunces, serif", fontSize: "9px", color: "rgba(212,169,71,0.6)", textAlign: "center", padding: "4px" }}>{p.books?.title?.split(" ")[0]}</div>
                     </div>
                   )}
                 </div>
@@ -182,6 +195,7 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
         </div>
       )}
 
+      {/* Catalogue */}
       <div style={{ background: "#141414", border: "1px solid #1e1e1e", borderRadius: "16px", padding: "22px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "10px", color: "#7a7468", letterSpacing: "0.15em", textTransform: "uppercase" }}>Book catalogue</div>
@@ -200,16 +214,21 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
             const isUpdating = updating === book.id;
             const isPurchased = purchases.some(pu => pu.book_id === book.id);
             const coverUrl = getCoverUrl(book.id);
-            const bookUrl = getBookUrl(book.id);
 
             return (
               <div key={book.id} style={{ background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "12px", overflow: "hidden", display: "flex", flexDirection: "column", transition: "border-color 0.2s" }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = "#8a6f2e"}
                 onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}>
 
-                <a href={bookUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", height: "180px", background: COVER_COLORS[book.pillar_tag || ""] || "#1a1a1a", position: "relative", overflow: "hidden" }}>
+                {/* Cover image */}
+                <a href={\`https://sikareads.com/books/\${book.id}\`} target="_blank" rel="noopener noreferrer" style={{ display: "block", height: "180px", background: COVER_COLORS[book.pillar_tag || ""] || "#1a1a1a", position: "relative", overflow: "hidden" }}>
                   {coverUrl && !coverErrors[book.id] ? (
-                    <img src={coverUrl} alt={book.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={() => setCoverErrors(prev => ({ ...prev, [book.id]: true }))} />
+                    <img
+                      src={coverUrl}
+                      alt={book.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      onError={() => setCoverErrors(prev => ({ ...prev, [book.id]: true }))}
+                    />
                   ) : (
                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "12px" }}>
                       <div style={{ textAlign: "center" }}>
@@ -219,19 +238,22 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
                     </div>
                   )}
                   {isPurchased && (
-                    <div style={{ position: "absolute", top: "8px", right: "8px", background: "rgba(122,168,122,0.95)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 7px", borderRadius: "100px" }}>✓ Owned</div>
+                    <div style={{ position: "absolute", top: "8px", right: "8px", background: "rgba(122,168,122,0.9)", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "3px 7px", borderRadius: "100px" }}>✓ Owned</div>
                   )}
                 </a>
 
+                {/* Info */}
                 <div style={{ padding: "12px", flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <a href={bookUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                  <a href={\`https://sikareads.com/books/\${book.id}\`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                     <div style={{ fontFamily: "Fraunces, serif", fontSize: "13px", color: "#f4ecd8", lineHeight: 1.3, fontWeight: 600 }}>{book.title}</div>
                   </a>
                   <div style={{ fontSize: "11px", color: "#7a7468" }}>{book.author}</div>
+
                   {book.pillar_tag && (
                     <span style={{ alignSelf: "flex-start", fontSize: "9px", color: PILLAR_COLORS[book.pillar_tag] || "#7a7468", padding: "2px 6px", border: "1px solid", borderColor: PILLAR_COLORS[book.pillar_tag] || "#7a7468", borderRadius: "100px" }}>{book.pillar_tag}</span>
                   )}
 
+                  {/* Action buttons */}
                   <div style={{ marginTop: "auto", paddingTop: "8px" }}>
                     {p ? (
                       <div>
@@ -239,7 +261,7 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
                           {p.status === "done" ? "✓ Finished" : p.status === "reading" ? "Reading" : "Want to read"}
                         </div>
                         {p.status === "reading" && (
-                          <div style={{ height: "3px", background: "#2a2a2a", borderRadius: "2px", overflow: "hidden", marginBottom: "6px" }}>
+                          <div style={{ height: "3px", background: "#2a2a2a", borderRadius: "2px", overflow: "hidden" }}>
                             <div style={{ height: "100%", width: p.progress_pct + "%", background: "#d4a947" }} />
                           </div>
                         )}
@@ -247,7 +269,7 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
                           <button
                             onClick={e => { e.stopPropagation(); updateStatus(book.id, book, p.status === "want" ? "reading" : "done"); }}
                             disabled={isUpdating}
-                            style={{ width: "100%", padding: "6px", background: "transparent", border: "1px solid #2a2a2a", color: "#999080", borderRadius: "6px", fontSize: "10px", cursor: "pointer" }}>
+                            style={{ marginTop: "6px", width: "100%", padding: "6px", background: "transparent", border: "1px solid #2a2a2a", color: "#999080", borderRadius: "6px", fontSize: "10px", cursor: "pointer" }}>
                             {isUpdating ? "..." : p.status === "want" ? "Start reading" : "Mark done"}
                           </button>
                         )}
@@ -260,8 +282,11 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
                           style={{ flex: 1, padding: "7px 4px", background: "#d4a947", border: "none", color: "#0a0a0a", borderRadius: "6px", fontSize: "10px", fontWeight: 600, cursor: "pointer" }}>
                           {isUpdating ? "..." : "Read"}
                         </button>
-                        <a href={bookUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ flex: 1, padding: "7px 4px", background: "transparent", border: "1px solid #d4a947", color: "#d4a947", borderRadius: "6px", fontSize: "10px", fontWeight: 600, textAlign: "center", textDecoration: "none", display: "block" }}>
+                        
+                          href={\`https://sikareads.com/books/\${book.id}\`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ flex: 1, padding: "7px 4px", background: "transparent", border: "1px solid #d4a947", color: "#d4a947", borderRadius: "6px", fontSize: "10px", fontWeight: 600, cursor: "pointer", textAlign: "center", textDecoration: "none" }}>
                           Buy
                         </a>
                       </div>
@@ -274,9 +299,18 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
         </div>
 
         {filteredBooks.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px", fontSize: "13px", color: "#7a7468" }}>No books in this shelf yet.</div>
+          <div style={{ textAlign: "center", padding: "40px", fontSize: "13px", color: "#7a7468" }}>
+            No books in this shelf yet.
+          </div>
         )}
       </div>
     </div>
   );
 }
+`;
+
+fs.writeFileSync(
+  path.join(__dirname, 'app', 'dashboard', 'sikareads', 'SikareadsClient.tsx'),
+  content, 'utf8'
+);
+console.log('Done: SikareadsClient.tsx rewritten with book covers and Buy button');
