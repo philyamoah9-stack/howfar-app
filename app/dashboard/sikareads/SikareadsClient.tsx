@@ -222,9 +222,12 @@ export default function SikareadsClient({ userId, userEmail, books, progress, pu
             const isUpdating = updating === book.id;
             return (
               <div key={book.id} style={{ background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px", transition: "border-color 0.2s" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "#8a6f2e"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}>
-                <div style={{ width: "100%", aspectRatio: "2/3", maxHeight: "120px", borderRadius: "4px", background: getCoverBg(book.pillar_tag), border: "1px solid rgba(212,169,71,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div key={book.id} style={{ background: "#0a0a0a", border: "1px solid #2a2a2a", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer" }}
+  onMouseEnter={e => e.currentTarget.style.borderColor = "#8a6f2e"}
+  onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a2a"}
+                <div style={{ width: "100%", aspectRatio: "2/3", maxHeight: "120px", borderRadius: "4px", background: <a href={`https://sikareads.com/books/${book.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+  <div style={{ fontFamily: "Fraunces, serif", fontSize: "13px", color: "#f4ecd8", lineHeight: 1.3, marginBottom: "2px" }}>{book.title}</div>
+</a>
                   <div style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: "11px", color: "rgba(212,169,71,0.6)", textAlign: "center", padding: "8px" }}>{book.title.split(" ").slice(0, 3).join(" ")}</div>
                 </div>
                 <div>
