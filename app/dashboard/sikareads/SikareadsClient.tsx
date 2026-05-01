@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 type Book = {
   id: string;
@@ -40,13 +40,51 @@ const STARTER_BOOKS: Book[] = [
   { id: "s8", title: "Deep Work", author: "Cal Newport", cover_url: null, pillar_tag: "Career", sikareads_link: null },
 ];
 
-type Props = { userId: string; books: Book[]; progress: Progress[]; };
+type Props = { 
+  userId: string; 
+  userEmail: string;
+  books: Book[]; 
+  progress: Progress[];
+  purchases: { book_id: string; book_title: string; book_author: string; book_genre: string; order_ref: string; purchased_at: string }[];
+};
 
-export default function SikareadsClient({ userId, books, progress }: Props) {
+export default function SikareadsClient({ userId, userEmail, books, progress, purchases }: Props) {
   const [myProgress, setMyProgress] = useState<Progress[]>(progress);
   const [filter, setFilter] = useState<"all" | "reading" | "want" | "done">("all");
   const [showAdd, setShowAdd] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  // Auto-add purchased books that aren't already tracked
+  const [autoAdding, setAutoAdding] = useState(false);
+  
+  useEffect(() => {
+    const addPurchasedBooks = async () => {
+      if (purchases.length === 0) return;
+      const untracked = purchases.filter(p => 
+        !myProgress.some(pr => pr.book_id === p.book_id)
+      );
+      if (untracked.length === 0) return;
+      
+      setAutoAdding(true);
+      try {
+        const supabase = (await import("../../lib/supabase")).createClient();
+        for (const purchase of untracked) {
+          const { data } = await supabase
+            .from("reading_progress")
+            .insert({
+              user_id: userId,
+              book_id: purchase.book_id,
+              status: "want",
+              progress_pct: 0,
+            })
+            .select("*, books(*)")
+            .single();
+          if (data) setMyProgress(prev => [...prev, data]);
+        }
+      } catch (e) { console.error(e); }
+      setAutoAdding(false);
+    };
+    addPurchasedBooks();
+  }, [purchases]);
 
   const allBooks = books.length > 0 ? books : STARTER_BOOKS;
 
@@ -195,6 +233,11 @@ export default function SikareadsClient({ userId, books, progress }: Props) {
                   {book.pillar_tag && (
                     <span style={{ fontSize: "9px", color: PILLAR_COLORS[book.pillar_tag] || "#7a7468", padding: "2px 6px", border: "1px solid " + (PILLAR_COLORS[book.pillar_tag] || "#7a7468"), borderRadius: "100px", letterSpacing: "0.08em", textTransform: "uppercase" }}>{book.pillar_tag}</span>
                   )}
+                  {purchases.some(p => p.book_id === book.id) && (
+  <span style={{ fontSize: "9px", color: "#7aa87a", padding: "2px 6px", border: "1px solid #7aa87a", borderRadius: "100px", background: "rgba(122,168,122,0.1)", marginLeft: "4px" }}>
+    ✓ Purchased
+  </span>
+)}
                 </div>
                 {p ? (
                   <div>
